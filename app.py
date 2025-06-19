@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from models.user import User
 from database import db
-from flask_login import LoginManager, login_user, current_user #gerencia o login dos usuarios
+from flask_login import LoginManager, login_user, current_user, logout_user, login_required #gerencia o login dos usuarios
 import os
 
 caminho_arquivo = 'modulo_4/sample-flask-auth/instance/database.db'
@@ -40,6 +40,12 @@ def login():
       return jsonify({'message':'Autenticação realizada com sucesso'})
 
   return jsonify({'message':'Credencias inválidas'}), 400
+
+@app.route('/logout', methods=['GET'])
+@login_required #decorator que vai proteger essa rota --> só vai ser executada se o usuario estiver logado --> se tentarmos fazer o logout sem estar logado vamos ter uma mensagem de erro
+def logout():
+  logout_user()
+  return jsonify({'message':'Logout realizado com sucesso.'})
 
 @app.route('/hello-world', methods=['GET'])
 def hello_world():
