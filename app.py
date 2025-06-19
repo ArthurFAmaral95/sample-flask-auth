@@ -47,7 +47,7 @@ def logout():
   logout_user()
   return jsonify({'message':'Logout realizado com sucesso.'})
 
-@app.route('/user', methods=["POST"])
+@app.route('/user', methods=['POST'])
 @login_required #só vamos conseguir registrar um novo usuario se estivermos logados em outro --> esse decorator pode proteger qualquer rota que precise de autenticacao para ser executda
 def create_user():
   data = request.json
@@ -72,7 +72,7 @@ def read_user(user_id):
   
   return jsonify({'message': 'Usuario não encontrado'}), 404
 
-@app.route('/user/<int:user_id>', methods=["PUT"])
+@app.route('/user/<int:user_id>', methods=['PUT'])
 @login_required
 def update_user(user_id):
   user = User.query.get(user_id)
@@ -84,6 +84,20 @@ def update_user(user_id):
     return jsonify({'message':f'Usuario {user_id} atualizado com sucesso'})
   
   return jsonify({'message':'Usuario não encontrado'}),400
+
+@app.route('/user/<int:user_id>', methods=['DELETE'])
+@login_required
+def delete_user(user_id):
+  user = User.query.get(user_id)
+
+  if user_id == current_user.id:
+    return jsonify({'message': 'Deleção não permitida,'}), 403
+  elif user:
+    db.session.delete(user)
+    db.session.commit()
+    return jsonify({'message':f'Usuario {user_id} deletado com sucesso'})
+  
+  return jsonify({'message':'Usuario não encontrado'}), 400
 
 @app.route('/hello-world', methods=['GET'])
 def hello_world():
