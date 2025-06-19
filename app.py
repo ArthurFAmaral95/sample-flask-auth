@@ -3,13 +3,10 @@ from models.user import User
 from database import db
 from flask_login import LoginManager, login_user, current_user, logout_user, login_required #gerencia o login dos usuarios
 import os
-
-caminho_arquivo = 'modulo_4/sample-flask-auth/instance/database.db'
-caminho_absoluto = os.path.abspath(caminho_arquivo)
  
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:////{caminho_absoluto}' #caminho do banco de dados
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:admin123@127.0.0.1:3306/flask-crud' #caminho do banco de dados
 
 login_manager = LoginManager()
 
