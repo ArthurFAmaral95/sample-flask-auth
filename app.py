@@ -78,7 +78,9 @@ def update_user(user_id):
   if user_id != current_user.id and current_user.role == 'user':
     return jsonify({'message':'Operação não permitida'}),403
   elif user and data.get('password'):
-    user.password = data.get('password')
+    password = data.get('password')
+    hashed_password = bcrypt.hashpw(str.encode(password),bcrypt.gensalt())
+    user.password = hashed_password
     db.session.commit()
     return jsonify({'message':f'Usuario {user_id} atualizado com sucesso'})
   
