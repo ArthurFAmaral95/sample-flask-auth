@@ -33,7 +33,6 @@ def login():
     user = User.query.filter_by(username=username).first() #o metodo filter_by retorna uma lista, por isso temos que usar o first para retornar somente o primeiro valor encontrado
     if user and bcrypt.checkpw(str.encode(password), str.encode(user.password)):
       login_user(user) #faz o login e a autenticacao do usuario
-      print(current_user.is_authenticated)
       return jsonify({'message':'Autenticação realizada com sucesso'})
 
   return jsonify({'message':'Credencias inválidas'}), 400
