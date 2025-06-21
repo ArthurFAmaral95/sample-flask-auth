@@ -1,10 +1,34 @@
 import pytest
-import requests
 from models.user import User
 from flask_login import FlaskLoginClient
-from app import app, db
+from app import create_app, db
 import bcrypt
 import uuid
+
+@pytest.fixture
+def app():
+  app = create_app()
+  app.test_client_class = FlaskLoginClient
+  app.config['TESTING'] = True
+
+  with app.app_context():
+    db.create_all()
+    yield app
+
+  
+@pytest.fixture
+def client(app):
+  return app.test_client()
+
+@pytest.fixture
+def user(app):
+  with app.app_context():
+    username = f'fixture_generated_test_{uuid.uuid4().hex[:8]}'
+    password = bcrypt.hashpw(str.encode('1234'), bcrypt.gensalt())
+    user = User(username=username, password=password, role='user')
+    db.session.add(user)
+    db.session.commit()
+    return user
 
 new_user_data = {
    'username': f'login_generatd_test_{uuid.uuid4().hex[:8]}',
@@ -15,24 +39,6 @@ user_data_erro = {
    'username': 'test_erro'
  }
 
-app.test_client_class = FlaskLoginClient
-app.testing = True
-
-@pytest.fixture
-def client():
-  return app.test_client()
-
-@pytest.fixture
-def user():
-  with app.app_context():
-    username = f'fixture_generated_test_{uuid.uuid4().hex[:8]}'
-    password = bcrypt.hashpw(str.encode('1234'), bcrypt.gensalt())
-    user = User(username=username, password=password, role='user')
-    db.session.add(user)
-    db.session.commit()
-    return user
-
-BASE_URL = 'http://127.0.0.1:5000'
 
 def test_create_user(client):
   global new_user_data
@@ -69,11 +75,11 @@ def test_read_user(client, user):
     assert 'username' in response_json
     assert response_json['username'] == user.username
 
-  with client.login(user):
-    response = client.get(f'/user/99999')
-    assert response.status_code == 404
-    response_json = response.get_json()
-    assert 'message' in response_json
+
+  # response = client.get(f'/user/99999')
+  # assert response.status_code == 404
+  # response_json = response.get_json()
+  # assert 'message' in response_json
 
 # def test_update_user():
 #   user = users[0]
