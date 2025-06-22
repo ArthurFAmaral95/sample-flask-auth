@@ -2,6 +2,7 @@ services:
   db:
     image: mysql:latest
     restart: always
+    container_name: flask-auth-mysql
     environment:
       MYSQL_USER: 'admin'
       MYSQL_PASSWORD: 'admin123'
@@ -9,8 +10,8 @@ services:
       MYSQL_ROOT_PASSWORD: 'admin123'
     ports:
       - "3306:3306"
-    expose:
-      # Opens port 3306 on the container
-      - '3306'
     volumes:
-      - /Users/arthuramaral/Documents/Code/Python/Rocketseat/mysql:/var/lib/mysql
+      - flask_auth_mysql_data:/var/lib/mysql
+
+volumes:
+  flask_auth_mysql_data:
